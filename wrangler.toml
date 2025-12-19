@@ -1,8 +1,5 @@
-name = "edge-notes"
+# Cloudflare Pages Configuration
 compatibility_date = "2024-12-01"
-
-# Pages 配置
-pages_build_output_dir = ".next"
 
 # D1 数据库配置 - 简化配置，只使用本地数据库
 [[d1_databases]]

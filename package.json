@@ -4,11 +4,12 @@
   "description": "极简笔记应用 - Edge Notes",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "next lint",
-    "wrangler:dev": "wrangler pages dev .next --proxy 3000 --d1=DB",
-    "wrangler:deploy": "wrangler pages deploy .next"
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "pages:deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static --project-name=edge-notes-pages",
+    "pages:dev": "npx @cloudflare/next-on-pages && wrangler pages dev .vercel/output/static"
   },
   "dependencies": {
     "@cloudflare/next-on-pages": "^1.13.16",
