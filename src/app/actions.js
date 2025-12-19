@@ -377,13 +377,12 @@ export async function updateNote(id, formData) {
       return { error: '更新笔记失败' }
     }
 
+    return { success: true, id }
+
   } catch (error) {
     console.error('更新笔记错误:', error)
     return { error: '服务器错误，请稍后重试' }
   }
-
-  // 更新成功后重定向到笔记详情页（放在 try-catch 外面）
-  redirect(`/note/${id}`)
 }
 
 // 删除笔记
@@ -399,11 +398,10 @@ export async function deleteNote(id) {
       return { error: '删除笔记失败' }
     }
 
+    return { success: true }
+
   } catch (error) {
     console.error('删除笔记错误:', error)
     return { error: '服务器错误，请稍后重试' }
   }
-
-  // 删除成功后重定向到首页（放在 try-catch 外面）
-  redirect('/')
 }
