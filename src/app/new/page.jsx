@@ -19,6 +19,13 @@ export default function NewNotePage() {
     try {
       const result = await createNote(formData)
 
+      // 检查是否成功
+      if (result?.success) {
+        // 创建成功，导航到首页
+        router.push('/')
+        return
+      }
+
       if (result?.error) {
         setError(result.error)
         if (result.debug) {

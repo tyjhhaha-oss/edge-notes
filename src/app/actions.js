@@ -197,6 +197,10 @@ export async function createNote(formData) {
       return { error: '创建笔记失败' }
     }
 
+    console.log('✅ [createNote] Note created successfully!')
+    // 返回成功标志，让客户端处理重定向
+    return { success: true }
+
   } catch (error) {
     console.error('❌ [createNote] Exception:', error)
     console.error('❌ [createNote] Error stack:', error.stack)
@@ -213,9 +217,6 @@ export async function createNote(formData) {
       }
     }
   }
-
-  // 创建成功后重定向到首页（放在 try-catch 外面）
-  redirect('/')
 }
 
 // 获取笔记列表
