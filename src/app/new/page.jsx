@@ -11,10 +11,14 @@ export default function NewNotePage() {
   const [error, setError] = useState('')
   const [debugInfo, setDebugInfo] = useState(null)
 
-  async function handleSubmit(formData) {
+  async function handleSubmit(e) {
+    e.preventDefault()
+
     setIsSubmitting(true)
     setError('')
     setDebugInfo(null)
+
+    const formData = new FormData(e.target)
 
     try {
       const result = await createNote(formData)
@@ -66,7 +70,7 @@ export default function NewNotePage() {
         </div>
       )}
 
-      <form action={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
             标题

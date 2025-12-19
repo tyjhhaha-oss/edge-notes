@@ -244,7 +244,8 @@ export async function getNotesList(query = '') {
     const stmt = db.prepare(sql)
     const notes = await stmt.bind(...params).all()
 
-    console.log(`📋 获取笔记列表: ${notes.results?.length || 0} 条笔记`)
+    console.log(`📋 [getNotesList] 获取笔记列表: ${notes.results?.length || 0} 条笔记`)
+    console.log(`📋 [getNotesList] 笔记数据:`, notes.results)
 
     return {
       success: true,
