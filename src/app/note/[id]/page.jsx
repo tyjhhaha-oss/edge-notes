@@ -3,6 +3,8 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getNoteById } from '../../actions'
 
+export const runtime = 'edge'
+
 export default async function NoteDetailPage({ params }) {
   const { id } = await params
   const result = await getNoteById(id)

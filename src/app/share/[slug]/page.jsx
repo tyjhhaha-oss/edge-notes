@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { getNoteBySlug } from '../../actions'
 
+export const runtime = 'edge'
+
 export default async function SharePage({ params }) {
   const { slug } = await params
   const result = await getNoteBySlug(slug)

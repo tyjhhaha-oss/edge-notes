@@ -3,6 +3,7 @@ import { getNotesList } from './actions'
 import Header from './components/Header'
 
 // 禁用页面缓存，确保每次都获取最新数据
+export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
