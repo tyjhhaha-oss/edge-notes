@@ -2,6 +2,7 @@
 
 import { nanoid } from 'nanoid'
 import { redirect } from 'next/navigation'
+import { getRequestContext } from '@cloudflare/next-on-pages'
 
 // ===== 数据库抽象层 =====
 // 支持开发环境（模拟数据）和生产环境（Cloudflare D1）
@@ -30,13 +31,16 @@ if (!globalThis.mockNotes) {
 
 // 获取数据库连接
 function getDB() {
-  // 在Cloudflare环境中，process.env.DB 会被注入D1数据库实例
-  // 在开发环境中，返回模拟数据库
-
-  if (process.env.DB) {
-    // 生产环境：使用真实的Cloudflare D1
-    console.log('✅ 使用 Cloudflare D1 数据库')
-    return process.env.DB
+  // 在Cloudflare Pages环境中，尝试从请求上下文获取D1实例
+  try {
+    const ctx = getRequestContext()
+    if (ctx?.env?.DB) {
+      console.log('✅ 使用 Cloudflare D1 数据库')
+      return ctx.env.DB
+    }
+  } catch (error) {
+    // getRequestContext() 在开发环境中会抛出错误，这是正常的
+    console.log('📝 Cloudflare context not available, using mock database')
   }
 
   // 开发环境：使用模拟数据库
