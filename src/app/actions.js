@@ -31,16 +31,29 @@ if (!globalThis.mockNotes) {
 
 // 获取数据库连接
 function getDB() {
-  // 在Cloudflare Pages环境中，尝试从请求上下文获取D1实例
+  // 在Cloudflare Pages环境中，尝试多种方式获取D1实例
+
+  // 方法1: 尝试从request context获取
   try {
-    const ctx = getRequestContext()
-    if (ctx?.env?.DB) {
-      console.log('✅ 使用 Cloudflare D1 数据库')
-      return ctx.env.DB
+    const requestContext = getRequestContext()
+    if (requestContext?.env?.DB) {
+      console.log('✅ 使用 Cloudflare D1 数据库 (via getRequestContext)')
+      return requestContext.env.DB
     }
-  } catch (error) {
-    // getRequestContext() 在开发环境中会抛出错误，这是正常的
-    console.log('📝 Cloudflare context not available, using mock database')
+  } catch (e) {
+    // 在开发环境或某些情况下会失败
+  }
+
+  // 方法2: 检查process.env (某些Cloudflare环境)
+  if (typeof process !== 'undefined' && process.env?.DB) {
+    console.log('✅ 使用 Cloudflare D1 数据库 (via process.env)')
+    return process.env.DB
+  }
+
+  // 方法3: 检查globalThis (Cloudflare Workers环境)
+  if (typeof globalThis !== 'undefined' && globalThis.DB) {
+    console.log('✅ 使用 Cloudflare D1 数据库 (via globalThis)')
+    return globalThis.DB
   }
 
   // 开发环境：使用模拟数据库
