@@ -1,0 +1,15 @@
+name = "edge-notes"
+compatibility_date = "2024-12-01"
+
+# Pages 配置
+pages_build_output_dir = ".next"
+
+# D1 数据库配置 - 简化配置，只使用本地数据库
+[[d1_databases]]
+binding = "DB"
+database_name = "edge-notes-db"
+database_id = "94cd064a-5889-43ad-b622-9bf3e9cb498e"
+
+# 环境变量配置
+[vars]
+ADMIN_PASSWORD = "admin123"
