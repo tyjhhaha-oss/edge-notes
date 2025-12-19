@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createNote } from '../actions'
 
+export const runtime = 'edge'
+
 export default function NewNotePage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -13,15 +15,18 @@ export default function NewNotePage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    console.log('🚀 [Client] Form submitted')
 
     setIsSubmitting(true)
     setError('')
     setDebugInfo(null)
 
     const formData = new FormData(e.target)
+    console.log('🚀 [Client] FormData created, calling createNote...')
 
     try {
       const result = await createNote(formData)
+      console.log('🚀 [Client] createNote returned:', result)
 
       // 检查是否成功
       if (result?.success) {
