@@ -198,8 +198,20 @@ export async function createNote(formData) {
     }
 
   } catch (error) {
-    console.error('创建笔记错误:', error)
-    return { error: '服务器错误，请稍后重试' }
+    console.error('❌ [createNote] Exception:', error)
+    console.error('❌ [createNote] Error stack:', error.stack)
+    console.error('❌ [createNote] Error message:', error.message)
+
+    // 返回详细的错误信息用于调试
+    return {
+      error: `调试信息: ${error.message}`,
+      debug: {
+        errorType: error.constructor.name,
+        errorStack: error.stack?.substring(0, 200),
+        dbType: typeof getDB(),
+        hasDB: !!getDB()
+      }
+    }
   }
 
   // 创建成功后重定向到首页（放在 try-catch 外面）

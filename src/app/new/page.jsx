@@ -9,20 +9,26 @@ export default function NewNotePage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [debugInfo, setDebugInfo] = useState(null)
 
   async function handleSubmit(formData) {
     setIsSubmitting(true)
     setError('')
-    
+    setDebugInfo(null)
+
     try {
       const result = await createNote(formData)
-      
+
       if (result?.error) {
         setError(result.error)
+        if (result.debug) {
+          setDebugInfo(result.debug)
+        }
       }
       // 如果成功，createNote 会重定向，所以这里不需要额外处理
     } catch (err) {
-      setError('创建笔记失败，请重试')
+      setError(`创建笔记失败: ${err.message}`)
+      setDebugInfo({ catchError: err.toString() })
     } finally {
       setIsSubmitting(false)
     }
@@ -31,7 +37,7 @@ export default function NewNotePage() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center mb-6">
-        <Link 
+        <Link
           href="/"
           className="text-gray-600 hover:text-gray-900 mr-4"
         >
@@ -39,13 +45,20 @@ export default function NewNotePage() {
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">新建笔记</h1>
       </div>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
-      
+
+      {debugInfo && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
+          <div className="font-bold mb-2">调试信息：</div>
+          <pre className="text-xs overflow-auto">{JSON.stringify(debugInfo, null, 2)}</pre>
+        </div>
+      )}
+
       <form action={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -60,7 +73,7 @@ export default function NewNotePage() {
             placeholder="输入笔记标题"
           />
         </div>
-        
+
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
             内容 (Markdown)
@@ -74,7 +87,7 @@ export default function NewNotePage() {
             placeholder="输入笔记内容，支持 Markdown 格式"
           />
         </div>
-        
+
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -87,7 +100,7 @@ export default function NewNotePage() {
             设为公开笔记（可分享）
           </label>
         </div>
-        
+
         <div className="flex gap-3">
           <button
             type="submit"
@@ -96,7 +109,7 @@ export default function NewNotePage() {
           >
             {isSubmitting ? '创建中...' : '创建笔记'}
           </button>
-          
+
           <Link
             href="/"
             className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition-colors"
