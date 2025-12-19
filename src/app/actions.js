@@ -322,10 +322,6 @@ export async function getNoteBySlug(slug) {
   }
 }
 
-import { cookies } from 'next/headers'
-
-// ... (其他 imports)
-
 // 鉴权辅助函数
 async function isAuthenticated() {
   const cookieStore = await cookies()
