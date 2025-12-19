@@ -9,7 +9,8 @@ export const revalidate = 0
 
 async function NotesList({ searchParams }) {
   const query = (await searchParams)?.query || ''
-  const result = await getNotesList(query)
+  const page = Number((await searchParams)?.page) || 1
+  const result = await getNotesList(query, page)
 
   if (!result.success) {
     return (
@@ -19,7 +20,7 @@ async function NotesList({ searchParams }) {
     )
   }
 
-  const notes = result.data
+  const { data: notes, pagination } = result
 
   return (
     <div className="space-y-4">
@@ -28,29 +29,58 @@ async function NotesList({ searchParams }) {
           {query ? `没有找到包含"${query}"的笔记` : '还没有笔记，创建第一个吧！'}
         </div>
       ) : (
-        notes.map((note) => (
-          <div key={note.id} className="border rounded-lg p-4 hover:bg-gray-50">
-            <Link href={`/note/${note.id}`}>
-              <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-800">
-                {note.title}
-              </h3>
-            </Link>
-            <p className="text-gray-600 mt-2 line-clamp-2">
-              {note.content.substring(0, 100)}
-              {note.content.length > 100 ? '...' : ''}
-            </p>
-            <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
-              <span suppressHydrationWarning={true}>
-                {new Date(note.created_at).toLocaleDateString('zh-CN')}
-              </span>
-              {note.is_public && (
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                  公开
+        <>
+          {notes.map((note) => (
+            <div key={note.id} className="border rounded-lg p-4 hover:bg-gray-50">
+              <Link href={`/note/${note.id}`}>
+                <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-800">
+                  {note.title}
+                </h3>
+              </Link>
+              <p className="text-gray-600 mt-2 line-clamp-2">
+                {note.content.substring(0, 100)}
+                {note.content.length > 100 ? '...' : ''}
+              </p>
+              <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
+                <span suppressHydrationWarning={true}>
+                  {new Date(note.created_at).toLocaleDateString('zh-CN')}
                 </span>
+                {note.is_public && (
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                    公开
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {/* 分页控制 */}
+          {pagination && (
+            <div className="flex justify-center items-center space-x-4 pt-4">
+              {pagination.page > 1 && (
+                <Link
+                  href={`/?page=${pagination.page - 1}${query ? `&query=${query}` : ''}`}
+                  className="px-4 py-2 border rounded-md hover:bg-gray-50 text-sm font-medium text-gray-700"
+                >
+                  上一页
+                </Link>
+              )}
+
+              <span className="text-sm text-gray-500">
+                第 {pagination.page} 页 / 共 {pagination.totalPages || 1} 页
+              </span>
+
+              {pagination.page < pagination.totalPages && (
+                <Link
+                  href={`/?page=${pagination.page + 1}${query ? `&query=${query}` : ''}`}
+                  className="px-4 py-2 border rounded-md hover:bg-gray-50 text-sm font-medium text-gray-700"
+                >
+                  下一页
+                </Link>
               )}
             </div>
-          </div>
-        ))
+          )}
+        </>
       )}
     </div>
   )

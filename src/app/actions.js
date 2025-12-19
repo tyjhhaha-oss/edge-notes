@@ -219,7 +219,8 @@ export async function createNote(formData) {
 }
 
 // 获取笔记列表
-export async function getNotesList(query = '') {
+export async function getNotesList(query = '', page = 1) {
+  const PAGE_SIZE = 20
   try {
     const db = getDB()
 
@@ -227,25 +228,40 @@ export async function getNotesList(query = '') {
       SELECT id, title, content, is_public, slug, created_at 
       FROM notes 
     `
+    let countSql = `SELECT COUNT(*) as total FROM notes`
 
     let params = []
 
     // 如果有搜索查询，添加 WHERE 条件
     if (query.trim()) {
-      sql += `WHERE (title LIKE ? OR content LIKE ?) `
+      const whereClause = ` WHERE (title LIKE ? OR content LIKE ?) `
+      sql += whereClause
+      countSql += whereClause
       const searchTerm = `%${query.trim()}%`
       params = [searchTerm, searchTerm]
     }
 
+    // 获取总条数
+    const countResult = await db.prepare(countSql).bind(...params).first()
+    const total = countResult?.total || 0
+    const totalPages = Math.ceil(total / PAGE_SIZE)
+
     // 添加排序和限制
-    sql += `ORDER BY created_at DESC LIMIT 20`
+    sql += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`
+    params.push(PAGE_SIZE, (page - 1) * PAGE_SIZE)
 
     const stmt = db.prepare(sql)
     const notes = await stmt.bind(...params).all()
 
     return {
       success: true,
-      data: notes.results || []
+      data: notes.results || [],
+      pagination: {
+        page,
+        pageSize: PAGE_SIZE,
+        total,
+        totalPages
+      }
     }
 
   } catch (error) {
