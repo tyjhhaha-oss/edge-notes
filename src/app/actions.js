@@ -152,7 +152,14 @@ function getDB() {
 // 创建笔记
 export async function createNote(formData) {
   try {
+    console.log('🔍 [createNote] Starting createNote function')
     const db = getDB()
+    console.log('🔍 [createNote] getDB() returned:', db ? 'object exists' : 'NULL', typeof db)
+
+    if (!db) {
+      console.error('❌ [createNote] CRITICAL: DB is null/undefined!')
+      return { error: '数据库连接失败' }
+    }
 
     // 从表单数据中提取字段
     const title = formData.get('title')?.toString().trim()
