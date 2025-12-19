@@ -10,14 +10,14 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  
+
   const redirectPath = searchParams.get('redirect') || '/'
 
   async function handleSubmit(e) {
     e.preventDefault()
     setIsLoading(true)
     setError('')
-    
+
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -26,13 +26,13 @@ function LoginForm() {
         },
         body: JSON.stringify({ password }),
       })
-      
+
       const result = await response.json()
-      
+
       if (result.success) {
         // 登录成功，跳转到原页面或首页
-        router.push(redirectPath)
-        router.refresh()
+        // 登录成功，使用硬跳转确保 Cookie 生效和状态重置
+        window.location.href = redirectPath
       } else {
         setError(result.error || '登录失败')
       }
@@ -55,14 +55,14 @@ function LoginForm() {
             请输入管理员密码访问笔记管理功能
           </p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}
-          
+
           <div>
             <label htmlFor="password" className="sr-only">
               密码
@@ -78,7 +78,7 @@ function LoginForm() {
               placeholder="请输入管理员密码"
             />
           </div>
-          
+
           <div>
             <button
               type="submit"
@@ -88,9 +88,9 @@ function LoginForm() {
               {isLoading ? '登录中...' : '登录'}
             </button>
           </div>
-          
+
           <div className="text-center">
-            <Link 
+            <Link
               href="/"
               className="text-blue-600 hover:text-blue-500 text-sm"
             >

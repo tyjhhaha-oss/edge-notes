@@ -2,6 +2,7 @@
 
 import { nanoid } from 'nanoid'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 
 // ===== 数据库抽象层 =====
@@ -152,9 +153,7 @@ function getDB() {
 // 创建笔记
 export async function createNote(formData) {
   try {
-    console.log('🔍 [createNote] Starting createNote function')
     const db = getDB()
-    console.log('🔍 [createNote] getDB() returned:', db ? 'object exists' : 'NULL', typeof db)
 
     if (!db) {
       console.error('❌ [createNote] CRITICAL: DB is null/undefined!')
@@ -244,9 +243,6 @@ export async function getNotesList(query = '') {
     const stmt = db.prepare(sql)
     const notes = await stmt.bind(...params).all()
 
-    console.log(`📋 [getNotesList] 获取笔记列表: ${notes.results?.length || 0} 条笔记`)
-    console.log(`📋 [getNotesList] 笔记数据:`, notes.results)
-
     return {
       success: true,
       data: notes.results || []
@@ -326,8 +322,25 @@ export async function getNoteBySlug(slug) {
   }
 }
 
+import { cookies } from 'next/headers'
+
+// ... (其他 imports)
+
+// 鉴权辅助函数
+async function isAuthenticated() {
+  const cookieStore = await cookies()
+  return !!cookieStore.get('auth_token')
+}
+
+// ...
+
 // 更新笔记
 export async function updateNote(id, formData) {
+  // 🔒 鉴权检查
+  if (!(await isAuthenticated())) {
+    return { error: '未授权的操作' }
+  }
+
   try {
     const db = getDB()
 
@@ -388,9 +401,13 @@ export async function updateNote(id, formData) {
 
 // 删除笔记
 export async function deleteNote(id) {
+  // 🔒 鉴权检查
+  if (!(await isAuthenticated())) {
+    return { error: '未授权的操作' }
+  }
+
   try {
     const db = getDB()
-
     const result = await db.prepare(
       'DELETE FROM notes WHERE id = ?'
     ).bind(id).run()

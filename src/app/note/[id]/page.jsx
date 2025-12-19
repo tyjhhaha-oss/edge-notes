@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getNoteById } from '../../actions'
+import ShareLink from '../../components/ShareLink'
 
 export const runtime = 'edge'
 
@@ -56,8 +57,12 @@ export default async function NoteDetailPage({ params }) {
         </div>
 
         {note.is_public && (
-          <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-            公开笔记
+          <div className="flex flex-col items-end">
+            <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+              公开笔记
+            </div>
+            {/* 传递 slug 给客户端组件生成链接 */}
+            <ShareLink slug={note.slug} />
           </div>
         )}
         {!note.is_public && (

@@ -1,4 +1,4 @@
 {
-  "/login/page": "app/login/page.js",
-  "/new/page": "app/new/page.js"
+  "/page": "static/webpack/app/page.633f3f873357194d.hot-update.js",
+  "/login/page": "app/login/page.js"
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 // 不需要鉴权的路径
-const publicPaths = ['/', '/login', '/share', '/api/auth']
+const publicPaths = ['/', '/login', '/share', '/api/auth', '/note']
 
 // 检查是否为公开路径
 function isPublicPath(pathname) {
